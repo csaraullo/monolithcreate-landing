@@ -876,6 +876,7 @@ footer a {
   <h2 class="reveal">Get early access</h2>
   <p class="sub reveal">Private beta — limited spots. Join the waitlist and be among the first to build with MONOLITH.</p>
   <form class="signup-form reveal" id="signup-form">
+    <input type="checkbox" name="botcheck" style="display: none;" tabindex="-1" autocomplete="off">
     <input type="email" name="email" id="email-input" placeholder="you@email.com" required>
     <button type="submit" id="submit-btn">Join Waitlist</button>
   </form>
@@ -916,7 +917,15 @@ document.getElementById('signup-form').addEventListener('submit', async function
   e.preventDefault();
   const form = e.target;
   const email = form.email.value;
+  const honeypot = form.botcheck.value;
   const btn = document.getElementById('submit-btn');
+
+  // Honeypot: if filled, it's a bot — silently fail
+  if (honeypot) {
+    form.reset();
+    document.getElementById('thanks-modal').classList.add('visible');
+    return;
+  }
 
   if (!email || !email.includes('@')) {
     document.getElementById('email-input').style.borderColor = '#dc2626';
@@ -931,6 +940,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
   formData.append('email', email);
   formData.append('subject', 'MONOLITH Waitlist - New signup');
   formData.append('from_name', 'MONOLITH Waitlist');
+  formData.append('botcheck', '');
 
   try {
     const response = await fetch('https://api.web3forms.com/submit', {
