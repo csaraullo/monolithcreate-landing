@@ -598,19 +598,18 @@ footer a {
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   opacity: 0;
-  pointer-events: none;
   transition: opacity 0.3s ease;
   padding: 24px;
 }
 
 .modal-overlay.visible {
+  display: flex;
   opacity: 1;
-  pointer-events: all;
 }
 
 .modal-box {
@@ -880,4 +879,100 @@ footer a {
     <input type="email" name="email" id="email-input" placeholder="you@email.com" required>
     <button type="submit" id="submit-btn">Join Waitlist</button>
   </form>
-  <p class="signup-note reveal">No spam. We'll email you when your access is read
+  <p class="signup-note reveal">No spam. We'll email you when your access is ready.</p>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="thanks-modal">
+  <div class="modal-box">
+    <div class="modal-icon">✓</div>
+    <h3>You're on the list</h3>
+    <p>Thanks for signing up for MONOLITH beta access!</p>
+    <p>We'll reach out soon with your invite.</p>
+    <p class="signature">— THE MONOLITH TEAM</p>
+    <button class="modal-close" onclick="closeModal()">Close</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 doodle S.r.l. & AiSolve Ltd. — <a href="https://monolithtechnologies.net">monolithtechnologies.net</a></p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Web3Forms AJAX submit — stays on page, no redirect
+document.getElementById('signup-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const email = form.email.value;
+  const btn = document.getElementById('submit-btn');
+
+  if (!email || !email.includes('@')) {
+    document.getElementById('email-input').style.borderColor = '#dc2626';
+    return;
+  }
+
+  btn.textContent = 'Joining...';
+  btn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('access_key', '1ae57c3b-b7f0-4be3-85e2-44b3f62b55d2');
+  formData.append('email', email);
+  formData.append('subject', 'MONOLITH Waitlist - New signup');
+  formData.append('from_name', 'MONOLITH Waitlist');
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      // Reset form
+      form.reset();
+      btn.textContent = 'Join Waitlist';
+      btn.disabled = false;
+      // Open modal
+      document.getElementById('thanks-modal').classList.add('visible');
+      document.body.style.overflow = 'hidden';
+    } else {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    btn.textContent = 'Try again';
+    btn.disabled = false;
+  }
+});
+
+// Close modal
+function closeModal() {
+  document.getElementById('thanks-modal').classList.remove('visible');
+  document.body.style.overflow = '';
+}
+
+// Close modal on overlay click
+document.getElementById('thanks-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Close modal on Esc key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
