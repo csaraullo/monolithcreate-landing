@@ -591,6 +591,103 @@ footer a {
   text-decoration: none;
 }
 
+/* === MODAL === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  padding: 24px;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 56px 48px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 40px 100px -10px rgba(0,0,0,0.8), 0 0 60px var(--orange-glow);
+}
+
+.modal-overlay.visible .modal-box {
+  transform: translateY(0) scale(1);
+}
+
+.modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.modal-box h3 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.modal-box p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.modal-box p.signature {
+  color: var(--orange);
+  font-weight: 500;
+  margin-top: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+}
+
+.modal-close {
+  margin-top: 32px;
+  padding: 14px 36px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  border-color: var(--orange);
+  background: var(--surface-2);
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   nav { padding: 16px 20px; }
@@ -622,7 +719,7 @@ footer a {
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><span>M</span>ONOLITH</div>
+  <a href="/" class="nav-logo" style="text-decoration: none;"><span>M</span>ONOLITH</a>
   <a href="#signup" class="nav-cta">Request Beta Access</a>
 </nav>
 
@@ -783,68 +880,4 @@ footer a {
     <input type="email" name="email" id="email-input" placeholder="you@email.com" required>
     <button type="submit" id="submit-btn">Join Waitlist</button>
   </form>
-  <p class="signup-note reveal">No spam. We'll email you when your access is ready.</p>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <p>© 2026 doodle S.r.l. & AiSolve Ltd. — <a href="https://monolithtechnologies.net">monolithtechnologies.net</a></p>
-</footer>
-
-<script>
-// Scroll reveal
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-// Web3Forms AJAX submit — stays on page, no redirect
-document.getElementById('signup-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const form = e.target;
-  const email = form.email.value;
-  const btn = document.getElementById('submit-btn');
-
-  if (!email || !email.includes('@')) {
-    document.getElementById('email-input').style.borderColor = '#dc2626';
-    return;
-  }
-
-  btn.textContent = 'Joining...';
-  btn.disabled = true;
-
-  const formData = new FormData();
-  formData.append('access_key', '1ae57c3b-b7f0-4be3-85e2-44b3f62b55d2');
-  formData.append('email', email);
-  formData.append('subject', 'MONOLITH Waitlist - New signup');
-  formData.append('from_name', 'MONOLITH Waitlist');
-
-  try {
-    const response = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: formData
-    });
-    const data = await response.json();
-
-    if (data.success) {
-      form.innerHTML =
-        '<p style="color: var(--orange); font-size: 18px; font-weight: 600;">Thanks for signing up! ✓</p>' +
-        '<p style="color: var(--text-dim); margin-top: 12px; font-size: 15px; line-height: 1.6;">Thanks for signing up for MONOLITH beta access!<br>We\'ll reach out soon with your invite.<br><br>— The MONOLITH Team</p>';
-    } else {
-      btn.textContent = 'Try again';
-      btn.disabled = false;
-    }
-  } catch (err) {
-    btn.textContent = 'Try again';
-    btn.disabled = false;
-  }
-});
-</script>
-
-</body>
-</html>
+  <p class="signup-note reveal">No spam. We'll email you when your access is read
