@@ -816,6 +816,10 @@ if (new URLSearchParams(window.location.search).has('thanks')) {
       '<p style="color: var(--orange); font-size: 18px; font-weight: 600;">Thanks for signing up! ✓</p>' +
       '<p style="color: var(--text-dim); margin-top: 12px; font-size: 15px; line-height: 1.6;">Thanks for signing up for MONOLITH beta access!<br>We\'ll reach out soon with your invite.<br><br>— The MONOLITH Team</p>';
   }
+  // Scroll to CTA section so user sees the thanks message
+  setTimeout(() => {
+    document.getElementById('signup').scrollIntoView({ behavior: 'instant', block: 'center' });
+  }, 50);
 }
 </script>
 
