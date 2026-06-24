@@ -779,10 +779,14 @@ footer a {
 <section class="cta-section" id="signup">
   <h2 class="reveal">Get early access</h2>
   <p class="sub reveal">Private beta — limited spots. Join the waitlist and be among the first to build with MONOLITH.</p>
-  <div class="signup-form reveal" id="signup-form">
-    <input type="email" id="email-input" placeholder="you@email.com" required>
-    <button type="button" id="submit-btn" onclick="handleSignup()">Join Waitlist</button>
-  </div>
+  <form class="signup-form reveal" id="signup-form" action="https://formsubmit.co/saraullocristian@gmail.com" method="POST">
+    <input type="hidden" name="_subject" value="MONOLITH Waitlist - Nuova richiesta">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" value="https://monolithcreate.com?thanks=1">
+    <input type="text" name="_honey" style="display:none">
+    <input type="email" name="email" placeholder="you@email.com" required>
+    <button type="submit">Join Waitlist</button>
+  </form>
   <p class="signup-note reveal">No spam. We'll email you when your access is ready.</p>
 </section>
 
@@ -803,23 +807,14 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// Signup handler (placeholder — swap with real backend/Mailchimp/Buttondown)
-function handleSignup() {
-  const email = document.getElementById('email-input').value;
-  const btn = document.getElementById('submit-btn');
-  if (!email || !email.includes('@')) {
-    document.getElementById('email-input').style.borderColor = '#dc2626';
-    return;
-  }
-  btn.textContent = 'Joining...';
-  btn.disabled = true;
-
-  // TODO: Replace with actual API call (e.g., Mailchimp, Buttondown, or custom endpoint)
-  setTimeout(() => {
-    document.getElementById('signup-form').innerHTML =
+// Show thank you if returning from form submit
+if (new URLSearchParams(window.location.search).has('thanks')) {
+  const form = document.getElementById('signup-form');
+  if (form) {
+    form.innerHTML =
       '<p style="color: var(--orange); font-size: 18px; font-weight: 600;">You\'re on the list ✓</p>' +
       '<p style="color: var(--text-dim); margin-top: 8px; font-size: 14px;">We\'ll reach out when your access is ready.</p>';
-  }, 800);
+  }
 }
 </script>
 
